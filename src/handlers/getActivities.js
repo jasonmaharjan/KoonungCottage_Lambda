@@ -2,7 +2,7 @@ import { getAPI } from "../../api/getApi";
 
 async function getActivities(event, context) {
     const internalId = "neighbourhood-house-activities";
-    const activities = await getAPI(`/${internalId}/entries`);
+    const activities = await getAPI(`/${internalId}/entries`, {});
 
     let entries = activities.entries.map((entry) => {
         return {
@@ -11,19 +11,18 @@ async function getActivities(event, context) {
             startTime: entry["start-time"],
             endTime: entry["end-time"],
             duration: entry["duration"],
-            cost: 0,
-            room: entry["class-type"],
+            cost: entry["activity-fee"],
+            room: entry["room"],
         };
     });
 
-    console.log(entries);
     return {
         statusCode: 200,
         headers: {
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Credentials": true,
         },
-        body: JSON.stringify({ message: entries }),
+        body: JSON.stringify({ entries: entries }),
     };
 }
 

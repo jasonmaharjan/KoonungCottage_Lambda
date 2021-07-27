@@ -2,7 +2,8 @@ import { getAPI } from "../../api/getApi";
 
 async function getActivity(event, context) {
     const internalId = "neighbourhood-house-activities";
-    let entry = await getAPI(`/${internalId}/entries/${event.queryStringParameters}`);
+    const { id } = event.pathParameters;
+    let entry = await getAPI(`/${internalId}/entries/${id}`, {});
 
     return {
         statusCode: 200,
@@ -10,7 +11,7 @@ async function getActivity(event, context) {
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Credentials": true,
         },
-        body: JSON.stringify({ message: event, entry }),
+        body: JSON.stringify({ entry: entry }),
     };
 }
 
