@@ -1,8 +1,47 @@
-import { getAPI } from "../../api/getApi";
+import { getRecordEntries } from "../../helper";
 
 async function getActivities(event, context) {
     const internalId = "neighbourhood-house-activities";
-    const activities = await getAPI(`/${internalId}/entries`, {});
+
+    let filter = [];
+
+    if (event.queryStringParameters) {
+        const { startDate, endDate, activity } = event.queryStringParameters;
+        const activityFilter = [
+            {
+                operator: "any_of",
+                subject: 7664,
+                value: [`${activity}`],
+                type: "array",
+            },
+        ];
+        const dateFilter = [
+            {
+                subject: "7661",
+                type: "datetime",
+                operator: "on_or_after",
+                ignoreCase: true,
+                value: { relative: false, value: `${startDate}` },
+            },
+            "and",
+            {
+                subject: "7663",
+                type: "datetime",
+                operator: "on_or_before",
+                ignoreCase: true,
+                value: { relative: false, value: `${endDate}` },
+            },
+        ];
+
+        if (activity && startDate && endDate) {
+            filter = [[...activityFilter, "and", ...dateFilter]];
+        } else if (activity) filter = [activityFilter];
+        else if (startDate && endDate) {
+            filter = [dateFilter];
+        }
+    }
+
+    const activities = await getRecordEntries(event, internalId, filter);
 
     let entries = activities.entries.map((entry) => {
         return {
@@ -22,7 +61,7 @@ async function getActivities(event, context) {
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Credentials": true,
         },
-        body: JSON.stringify({ entries: entries }),
+        body: JSON.stringify({ entries, total: activities.total }),
     };
 }
 

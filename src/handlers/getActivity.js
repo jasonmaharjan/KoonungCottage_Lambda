@@ -1,9 +1,9 @@
-import { getAPI } from "../../api/getApi";
+import { getEntryById } from "../../helper";
 
 async function getActivity(event, context) {
     const internalId = "neighbourhood-house-activities";
     const { id } = event.pathParameters;
-    let entry = await getAPI(`/${internalId}/entries/${id}`, {});
+    let entry = await getEntryById(id, internalId);
 
     return {
         statusCode: 200,
@@ -11,7 +11,7 @@ async function getActivity(event, context) {
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Credentials": true,
         },
-        body: JSON.stringify({ entry: entry }),
+        body: JSON.stringify(entry),
     };
 }
 
