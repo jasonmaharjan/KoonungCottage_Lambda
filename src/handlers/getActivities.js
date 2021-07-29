@@ -6,15 +6,25 @@ async function getActivities(event, context) {
     let filter = [];
 
     if (event.queryStringParameters) {
-        const { startDate, endDate, activity } = event.queryStringParameters;
-        const activityFilter = [
+        const { startDate, endDate, activityType, activityCategory } = event.queryStringParameters;
+        const activityTypeFilter = [
             {
                 operator: "any_of",
                 subject: 7664,
-                value: [`${activity}`],
+                value: [`${activityType}`],
                 type: "array",
             },
         ];
+
+        const activityCategoryFilter = [
+            {
+                operator: "any_of",
+                subject: 8375,
+                value: [`${activityCategory}`],
+                type: "array",
+            },
+        ];
+
         const dateFilter = [
             {
                 subject: "7661",
@@ -33,9 +43,10 @@ async function getActivities(event, context) {
             },
         ];
 
-        if (activity && startDate && endDate) {
-            filter = [[...activityFilter, "and", ...dateFilter]];
-        } else if (activity) filter = [activityFilter];
+        if (activityTypeFilter && activityCategoryFilter && startDate && endDate) {
+            filter = [[...activityTypeFilter, ...activityCategoryFilter, "and", ...dateFilter]];
+        } else if (activityTypeFilter) filter = [activityTypeFilter];
+        else if (activityCategoryFilter) filter = [activityCategoryFilter];
         else if (startDate && endDate) {
             filter = [dateFilter];
         }

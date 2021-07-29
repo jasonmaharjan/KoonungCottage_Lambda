@@ -1,25 +1,22 @@
 import axios from "../../api/axios";
 
-async function createMember(event, context) {
-    const internalId = "neighbourhood-house-members";
+async function createAttendance(event, context) {
+    const internalId = "neighbourhood-house-attendances";
     const url = `/${internalId}/entries`;
-    const { firstName, lastName, email, phone } = JSON.parse(event.body);
-    const member = {
+    const { memberId, activityId } = JSON.parse(event.body);
+
+    console.log(memberId, activityId);
+
+    const attendance = {
         entry: {
-            "full-name": firstName + " " + lastName,
-            email,
-            "first-name": firstName,
-            "last-name": lastName,
-            "phone-mobile": phone,
-            type: [],
+            activity: [`${activityId}`],
+            member: [`${memberId}`],
         },
         subrecords: {},
     };
 
-    console.log(member);
-
     try {
-        const resData = await axios.post(url, member);
+        const resData = await axios.post(url, attendance);
         return {
             statusCode: 201,
             headers: {
@@ -38,4 +35,4 @@ async function createMember(event, context) {
     }
 }
 
-export const handler = createMember;
+export const handler = createAttendance;
