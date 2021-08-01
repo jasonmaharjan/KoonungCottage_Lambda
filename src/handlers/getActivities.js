@@ -5,22 +5,46 @@ async function getActivities(event, context) {
 
     let filter = [];
 
+    const startingDateFilter = [
+        {
+            subject: "7661",
+            type: "datetime",
+            operator: "on_or_after",
+            ignoreCase: true,
+            value: { relative: false, value: `${new Date().toISOString()}` },
+        },
+    ];
+
+    filter.push(startingDateFilter);
+
     if (event.queryStringParameters) {
         const { startDate, endDate, activityType, activityCategory } = event.queryStringParameters;
+
+        let activityTypes;
+        let activityCategoryFilter = [];
+
+        if (activityCategory && !activityType) {
+            activityCategoryFilter = [
+                {
+                    operator: "any_of",
+                    subject: 8376,
+                    value: [`${activityCategory}`],
+                    type: "array",
+                },
+            ];
+
+            activityTypes = await getRecordEntries(event, "neighbourhood-house-activity-types", [activityCategoryFilter]);
+        }
+
         const activityTypeFilter = [
             {
                 operator: "any_of",
                 subject: 7664,
-                value: [`${activityType}`],
-                type: "array",
-            },
-        ];
-
-        const activityCategoryFilter = [
-            {
-                operator: "any_of",
-                subject: 8375,
-                value: [`${activityCategory}`],
+                value: activityCategory
+                    ? activityTypes.entries.length
+                        ? activityTypes.entries.map((entry) => "" + entry.id)
+                        : [""]
+                    : [`${activityType}`],
                 type: "array",
             },
         ];
@@ -43,10 +67,9 @@ async function getActivities(event, context) {
             },
         ];
 
-        if (activityTypeFilter && activityCategoryFilter && startDate && endDate) {
-            filter = [[...activityTypeFilter, ...activityCategoryFilter, "and", ...dateFilter]];
-        } else if (activityTypeFilter) filter = [activityTypeFilter];
-        else if (activityCategoryFilter) filter = [activityCategoryFilter];
+        if (activityTypeFilter && startDate && endDate) {
+            filter = [[...activityTypeFilter, "and", ...dateFilter]];
+        } else if (activityTypeFilter) filter = [[...filter, "and", ...activityTypeFilter]];
         else if (startDate && endDate) {
             filter = [dateFilter];
         }
