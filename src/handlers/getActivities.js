@@ -44,7 +44,9 @@ async function getActivities(event, context) {
                     ? activityTypes.entries.length
                         ? activityTypes.entries.map((entry) => "" + entry.id)
                         : [""]
-                    : [`${activityType}`],
+                    : activityType
+                    ? [`${activityType}`]
+                    : null,
                 type: "array",
             },
         ];
@@ -67,10 +69,11 @@ async function getActivities(event, context) {
             },
         ];
 
-        if (activityTypeFilter && startDate && endDate) {
-            filter = [[...activityTypeFilter, "and", ...dateFilter]];
-        } else if (activityTypeFilter) filter = [[...filter, "and", ...activityTypeFilter]];
-        else if (startDate && endDate) {
+        if (activityTypeFilter && !startDate && !endDate) {
+            filter = [[...filter, "and", ...activityTypeFilter]];
+        } else if (activityTypeFilter[0].value && startDate && endDate) {
+            filter = [[...dateFilter, "and", ...activityTypeFilter]];
+        } else if (startDate && endDate) {
             filter = [dateFilter];
         }
     }
