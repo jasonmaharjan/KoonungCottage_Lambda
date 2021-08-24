@@ -17,10 +17,10 @@ async function getActivities(event, context) {
 
     filter.push(startingDateFilter);
 
+    let activityTypes;
     if (event.queryStringParameters) {
         const { startDate, endDate, activityType, activityCategory } = event.queryStringParameters;
 
-        let activityTypes;
         let activityCategoryFilter = [];
 
         if (activityCategory && !activityType) {
@@ -76,11 +76,32 @@ async function getActivities(event, context) {
         } else if (startDate && endDate) {
             filter = [dateFilter];
         }
+    } else {
+        activityTypes = await getRecordEntries(event, "neighbourhood-house-activity-types", []);
     }
+
+    let activityTypeMap = {};
+
+    activityTypes.entries.forEach((activity) => {
+        activityTypeMap[activity.id] = activity;
+    });
 
     const activities = await getRecordEntries(event, internalId, filter);
 
     let entries = activities.entries.map((entry) => {
+        let activityTypeId = (entry["class-type"] && entry["class-type"][0] && entry["class-type"][0].id) || null;
+
+        let shortDescription = "";
+        let imageURL = "https://kalysys.com/wp-content/uploads/2021/08/NH-Placeholder-2.png";
+
+        if (activityTypeId) {
+            let activityType = activityTypeMap[activityTypeId];
+            shortDescription = activityType["short-description"];
+
+            imageURL = activityType["image-url"] ? activityType["image-url"] : imageURL;
+            console.log("imageURL ", imageURL, activityType);
+        }
+
         return {
             id: entry["id"],
             name: entry["name"],
@@ -89,6 +110,9 @@ async function getActivities(event, context) {
             duration: entry["duration"],
             cost: entry["activity-fee"],
             room: entry["room"],
+            type: "activity",
+            shortDescription,
+            websiteImage: imageURL,
         };
     });
 

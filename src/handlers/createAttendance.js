@@ -5,8 +5,6 @@ async function createAttendance(event, context) {
     const url = `/${internalId}/entries`;
     const { memberId, activityId } = JSON.parse(event.body);
 
-    console.log(memberId, activityId);
-
     const attendance = {
         entry: {
             activity: [`${activityId}`],

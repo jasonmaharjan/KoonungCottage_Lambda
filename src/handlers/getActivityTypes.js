@@ -11,7 +11,6 @@ async function getActivityTypes(event, context) {
         const { activityCategory } = event.queryStringParameters;
 
         if (activityCategory) {
-            console.log("ACTIVITY CATEGORY -->", activityCategory);
             const activityCategoryFilter = [
                 {
                     operator: "any_of",

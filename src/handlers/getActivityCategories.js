@@ -5,7 +5,6 @@ async function getActivityCategories(event, context) {
     const url = `/${internalId}/entries`;
     const activityCategories = await getAPI(url, {});
 
-    console.log(activityCategories);
     return {
         statusCode: 200,
         headers: {

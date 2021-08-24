@@ -16,8 +16,6 @@ async function createMember(event, context) {
         subrecords: {},
     };
 
-    console.log(member);
-
     try {
         const resData = await axios.post(url, member);
         return {
