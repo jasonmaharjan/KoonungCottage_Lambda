@@ -1,7 +1,7 @@
 import { getRecordEntries } from "../../helper";
 
 async function getActivities(event, context) {
-    const internalId = "neighbourhood-house-activities";
+    const internalId = "neighbourhood-house-sessions";
 
     let filter = [];
 
@@ -33,7 +33,7 @@ async function getActivities(event, context) {
                 },
             ];
 
-            activityTypes = await getRecordEntries(event, "neighbourhood-house-activity-types", [activityCategoryFilter]);
+            activityTypes = await getRecordEntries(event, "neighbourhood-house-activities", [activityCategoryFilter]);
         }
 
         const activityTypeFilter = [
@@ -77,7 +77,7 @@ async function getActivities(event, context) {
             filter = [dateFilter];
         }
     } else {
-        activityTypes = await getRecordEntries(event, "neighbourhood-house-activity-types", []);
+        activityTypes = await getRecordEntries(event, "neighbourhood-house-activities", []);
     }
 
     let activityTypeMap = {};

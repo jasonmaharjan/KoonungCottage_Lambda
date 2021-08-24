@@ -2,7 +2,7 @@ import { getRecordEntries } from "../../helper";
 import { getAPI } from "../../api/getApi";
 
 async function getActivityTypes(event, context) {
-    const internalId = "neighbourhood-house-activity-types";
+    const internalId = "neighbourhood-house-activities";
     const url = `/${internalId}/entries`;
 
     let activityTypes;
@@ -20,7 +20,7 @@ async function getActivityTypes(event, context) {
                 },
             ];
 
-            activityTypes = await getRecordEntries(event, "neighbourhood-house-activity-types", [activityCategoryFilter]);
+            activityTypes = await getRecordEntries(event, "neighbourhood-house-activities", [activityCategoryFilter]);
         }
     } else activityTypes = await getAPI(url, {});
 

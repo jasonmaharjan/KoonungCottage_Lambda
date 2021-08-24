@@ -1,7 +1,7 @@
 import { getEntryById } from "../../helper";
 
 async function getActivity(event, context) {
-    const internalId = "neighbourhood-house-activities";
+    const internalId = "neighbourhood-house-sessions";
     const { id } = event.pathParameters;
     let entry = await getEntryById(id, internalId);
 
@@ -11,7 +11,7 @@ async function getActivity(event, context) {
     let imageURL = "https://kalysys.com/wp-content/uploads/2021/08/NH-Placeholder-2.png";
 
     if (activityTypeId) {
-        let activityType = await getEntryById(activityTypeId, "neighbourhood-house-activity-types");
+        let activityType = await getEntryById(activityTypeId, "neighbourhood-house-activities");
 
         shortDescription = activityType["short-description"];
 
